@@ -3,41 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToDo App</title>
-    <style>
-        body { font-family: sans-serif; margin: 2em; }
-        .task-list { list-style: none; padding: 0; }
-        .task-item { display: flex; align-items: center; margin-bottom: 0.5em; }
-        .task-item.completed { text-decoration: line-through; color: #888; }
-        .task-item a { margin-right: 1em; text-decoration: none;}
-        .add-form { margin-top: 2em; }
-    </style>
+    <title>ToDo App - Modern UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-100 text-slate-800">
 
-    <h1>ToDoリスト</h1>
+    <div class="container mx-auto mt-10 max-w-2xl">
+        <h1 class="text-4xl font-bold text-center mb-8">My ToDo List</h1>
 
-    <ul class="task-list">
-        {# Flaskから渡されたtasksリストをループして表示 #}
-        {% for task in tasks %}
-            <li class="task-item {% if task[2] %}completed{% endif %}">
-                {% if not task[2] %}
-                    <a href="{{ url_for('complete_task', task_id=task[0]) }}">✅</a>
+        <!-- タスク追加フォーム -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <form action="{{ url_for('add_task') }}" method="post" class="flex gap-4">
+                <input 
+                    type="text" 
+                    name="title" 
+                    placeholder="新しいタスクを追加..." 
+                    required
+                    class="flex-grow p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+                >
+                <button 
+                    type="submit"
+                    class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-6 rounded-lg transition"
+                >
+                    追加
+                </button>
+            </form>
+        </div>
+
+        <!-- タスク一覧 -->
+        <div class="bg-white rounded-lg shadow-md">
+            <ul class="divide-y divide-slate-200">
+                {# Flaskから渡されたtasksリストをループして表示 #}
+                {% for task in tasks %}
+                    <li class="p-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            {% if not task[2] %}
+                                <a href="{{ url_for('complete_task', task_id=task[0]) }}" class="mr-4 text-2xl">
+                                    <div class="w-7 h-7 border-2 border-slate-300 rounded-md hover:bg-green-100 transition"></div>
+                                </a>
+                                <span class="text-lg">{{ task[1] }}</span>
+                            {% else %}
+                                <div class="mr-4 text-2xl text-green-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7">
+                                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.06-1.06l-3.109 3.108-1.59-1.59a.75.75 0 0 0-1.06 1.061l2.121 2.12.75.75.75-.75 3.64-3.64Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span class="text-lg text-slate-400 line-through">{{ task[1] }}</span>
+                            {% endif %}
+                        </div>
+                        <span class="text-xs text-slate-400">ID: {{ task[0] }}</span>
+                    </li>
                 {% else %}
-                    <span>✅</span>
-                {% endif %}
-                <span>{{ task[1] }} (ID: {{ task[0] }})</span>
-            </li>
-        {% else %}
-            <li>タスクはありません。</li>
-        {% endfor %}
-    </ul>
+                    <li class="p-4 text-center text-slate-500">タスクはありません。</li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    <div class="add-form">
-        <form action="{{ url_for('add_task') }}" method="post">
-            <input type="text" name="title" placeholder="新しいタスク" required>
-            <button type="submit">追加</button>
-        </form>
+        <footer class="text-center mt-8 text-slate-500 text-sm">
+            <p>Powered by Flask & Tailwind CSS</p>
+        </footer>
     </div>
 
 </body>
