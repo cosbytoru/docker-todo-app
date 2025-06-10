@@ -74,6 +74,40 @@ def complete_task(task_id):
     return redirect(url_for('index'))
 
 
+# タスクの削除
+@app.route('/delete/<int:task_id>')
+def delete_task(task_id):
+    """タスクの削除"""
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM tasks WHERE id = %s", (task_id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+    except (Exception, psycopg2.Error) as error:
+        print(f"タスク {task_id} の削除中にエラーが発生しました:", error)
+    return redirect(url_for('index'))
+
+
+
+@app.route('/reactivate/<int:task_id>')
+def reactivate_task(task_id):
+    """完了したタスクを未完了に戻す"""
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        # completedフラグをFALSEに更新する
+        cur.execute("UPDATE tasks SET completed = FALSE WHERE id = %s", (task_id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+    except (Exception, psycopg2.Error) as error:
+        print("タスクの再活性化中にエラーが発生しました:", error)
+
+    return redirect(url_for('index'))
+
+
 # このファイルが直接実行された場合に、開発用サーバーを起動
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

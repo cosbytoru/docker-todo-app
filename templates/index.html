@@ -11,7 +11,6 @@
     <div class="container mx-auto mt-10 max-w-2xl">
         <h1 class="text-4xl font-bold text-center mb-8">My ToDo List</h1>
 
-        <!-- タスク追加フォーム -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-8">
             <form action="{{ url_for('add_task') }}" method="post" class="flex gap-4">
                 <input 
@@ -30,29 +29,40 @@
             </form>
         </div>
 
-        <!-- タスク一覧 -->
         <div class="bg-white rounded-lg shadow-md">
             <ul class="divide-y divide-slate-200">
                 {# Flaskから渡されたtasksリストをループして表示 #}
                 {% for task in tasks %}
-                    <li class="p-4 flex items-center justify-between">
-                        <div class="flex items-center">
-                            {% if not task[2] %}
-                                <a href="{{ url_for('complete_task', task_id=task[0]) }}" class="mr-4 text-2xl">
-                                    <div class="w-7 h-7 border-2 border-slate-300 rounded-md hover:bg-green-100 transition"></div>
-                                </a>
-                                <span class="text-lg">{{ task[1] }}</span>
-                            {% else %}
-                                <div class="mr-4 text-2xl text-green-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7">
-                                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.06-1.06l-3.109 3.108-1.59-1.59a.75.75 0 0 0-1.06 1.061l2.121 2.12.75.75.75-.75 3.64-3.64Z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <span class="text-lg text-slate-400 line-through">{{ task[1] }}</span>
-                            {% endif %}
-                        </div>
-                        <span class="text-xs text-slate-400">ID: {{ task[0] }}</span>
-                    </li>
+ <li class="p-4 flex items-center justify-between">
+
+    <div class="flex items-center">
+        {% if not task[2] %}
+            {# 未完了タスクの表示：クリックすると完了になるチェックボックス #}
+            <a href="{{ url_for('complete_task', task_id=task[0]) }}" class="mr-4 text-2xl">
+                <div class="w-7 h-7 border-2 border-slate-300 rounded-md hover:bg-green-100 transition"></div>
+            </a>
+            <span class="text-lg">{{ task[1] }}</span>
+        {% else %}
+            {# 完了済みタスクの表示：クリックすると未完了に戻る「元に戻す」アイコン #}
+            <a href="{{ url_for('reactivate_task', task_id=task[0]) }}" class="mr-4 text-2xl text-slate-400 hover:text-sky-500 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7">
+                  <path fill-rule="evenodd" d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            <span class="text-lg text-slate-400 line-through">{{ task[1] }}</span>
+        {% endif %}
+    </div>
+
+    <div class="flex items-center gap-4">
+        <span class="text-xs text-slate-400">ID: {{ task[0] }}</span>
+        <a href="{{ url_for('delete_task', task_id=task[0]) }}" class="text-slate-400 hover:text-red-500 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.006a.75.75 0 0 1-.749.684H7.08a.75.75 0 0 1-.749-.684L5.33 6.63a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 9 4.705v-.227c0-1.564 1.213-2.9 2.816-2.9h.368c1.603 0 2.816 1.336 2.816 2.9ZM12 6.25a.75.75 0 0 1 .75.75v8.5a.75.75 0 0 1-1.5 0v-8.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </div>
+</li>
+
                 {% else %}
                     <li class="p-4 text-center text-slate-500">タスクはありません。</li>
                 {% endfor %}
