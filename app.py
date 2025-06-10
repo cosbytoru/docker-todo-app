@@ -90,7 +90,6 @@ def delete_task(task_id):
     return redirect(url_for('index'))
 
 
-
 @app.route('/reactivate/<int:task_id>')
 def reactivate_task(task_id):
     """完了したタスクを未完了に戻す"""
