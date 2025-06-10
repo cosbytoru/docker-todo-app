@@ -13,6 +13,7 @@ DB_NAME = "postgres"
 DB_USER = "postgres"
 DB_PASS = "mysecretpassword"
 
+
 def get_connection():
     """データベース接続を取得する"""
     conn = psycopg2.connect(
