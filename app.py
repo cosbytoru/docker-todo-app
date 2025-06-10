@@ -2,10 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import psycopg2
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key' # 必ず何らかの文字列を設定
+app.secret_key = 'your_secret_key'  # 必ず何らかの文字列を設定
 
 # --- データベース接続情報 ---
 DB_HOST = "db"  # docker-composeで定義したサービス名
+
+
 DB_PORT = "5432"
 DB_NAME = "postgres"
 DB_USER = "postgres"
@@ -17,6 +19,7 @@ def get_connection():
         host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASS
     )
     return conn
+
 
 # --- ルーティング ---
 @app.route('/')
@@ -35,6 +38,7 @@ def index():
 
     # templates/index.html を呼び出し、取得したtasksを渡す
     return render_template('index.html', tasks=tasks)
+
 
 @app.route('/add', methods=['POST'])
 def add_task():
@@ -58,6 +62,7 @@ def add_task():
     # トップページにリダイレクト（再表示）する
     return redirect(url_for('index'))
 
+
 @app.route('/complete/<int:task_id>')
 def complete_task(task_id):
     """タスクの完了"""
@@ -73,6 +78,7 @@ def complete_task(task_id):
         print("タスクの完了中にエラーが発生しました:", error)
         flash(f"タスクID {task_id} の完了処理中にエラーが発生しました。", "danger")
     return redirect(url_for('index'))
+
 
 # タスクの削除
 @app.route('/delete/<int:task_id>')
@@ -91,6 +97,7 @@ def delete_task(task_id):
         flash(f"タスクID {task_id} の削除中にエラーが発生しました。", "danger")
     return redirect(url_for('index'))
 
+
 @app.route('/reactivate/<int:task_id>')
 def reactivate_task(task_id):
     """完了したタスクを未完了に戻す"""
@@ -107,6 +114,7 @@ def reactivate_task(task_id):
         print("タスクの再活性化中にエラーが発生しました:", error)
         flash(f"タスクID {task_id} の再活性化中にエラーが発生しました。", "danger")
     return redirect(url_for('index'))
+
 
 @app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
 def edit_task(task_id):
@@ -142,7 +150,10 @@ def edit_task(task_id):
     try:
         conn_get = get_connection()
         cur_get = conn_get.cursor()
-        cur_get.execute("SELECT id, title, completed FROM tasks WHERE id = %s", (task_id,)) # titleだけでなくtask全体を取得する方が良い場合がある
+        # titleだけでなくtask全体を取得する方が良い場合がある
+        cur_get.execute(
+            "SELECT id, title, completed FROM tasks WHERE id = %s", (task_id,)
+        )
         task = cur_get.fetchone()
         if not task:
             flash(f"編集するタスクID {task_id} が見つかりません。", "warning")
@@ -158,6 +169,7 @@ def edit_task(task_id):
             conn_get.close()
     # templates/edit.html を呼び出し、編集対象のtaskを渡す
     return render_template('edit.html', task=task)
+
 
 # このファイルが直接実行された場合に、開発用サーバーを起動
 if __name__ == '__main__':
